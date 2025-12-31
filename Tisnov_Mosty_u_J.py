@@ -15,9 +15,9 @@ from matplotlib.ticker import FuncFormatter, MultipleLocator
 
 # Type here location of your input files
 files = {
-    "T-Mobile (1)": "dataset_Tisnov_Mosty\\TM1.csv",
-    "T-Mobile (2)": "dataset_Tisnov_Mosty\\TM2.csv",
-    "T-Mobile (3)": "dataset_Tisnov_Mosty\\TM3.csv"
+    "T-Mobile (1)": "dataset_Tisnov_Mosty\\T_Mobile1.csv",
+    "T-Mobile (2)": "dataset_Tisnov_Mosty\\T_Mobile2.csv",
+    "T-Mobile (3)": "dataset_Tisnov_Mosty\\T_Mobile3.csv"
 }
 # Color settings for operators
 colors = {"T-Mobile (1)": "green","T-Mobile (2)": "orange","T-Mobile (3)": "purple"}
@@ -64,6 +64,13 @@ BAND_MHz = {
 "EGSM": "900 MHz",
 "PGSM": "900 MHz",
 }
+
+# GSM frequency bands (2G)
+GSM_BANDS = {"EGSM", "PGSM"}  
+# LTE frequency bands (4G)                   
+LTE_BANDS = {"L1","L3","L7","L8","L20","L28","L38"} 
+# NR frequency bands (5G)
+NR_BANDS  = {"N1","N3","N7","N8","N28","N38","N78"} 
 
 
 ## function that does data preprocessing
@@ -311,6 +318,14 @@ for op, df_op in df_all.groupby("Operator"):
     fig, ax = plt.subplots(figsize=FigSizeSet)
     # find out not NaN rows in BAND colum
     df_op = df_op[df_op["BAND"].notna()].copy()
+    # keep only valid combinations of radio access technology and RF band
+                  # 2G – GSM bands only (EGSM, PGSM)
+    df_op = df_op[((df_op["NetworkTech"] == "2G") & (df_op["BAND"].isin(GSM_BANDS))) |
+                  # 4G – LTE bands only (L1, L3, L7, L8, L20, L28, L38)
+                  ((df_op["NetworkTech"] == "4G") & (df_op["BAND"].isin(LTE_BANDS))) |
+                  # 5G – NR bands only (N1, N3, N7, N8, N28, N38, N78)
+                  ((df_op["NetworkTech"] == "5G") & (df_op["BAND"].isin(NR_BANDS)))
+    ]
     # create technology band labels to legend
     df_op["TECH_BAND"] = (df_op["NetworkTech"].astype(str) + " " + df_op["BAND"].astype(str) + " (" + df_op["BAND"].map(BAND_MHz).fillna("?") + ")")
     # get our gps location and transfer Longitude and Latitude to Web Mercator (meters) - basemap require this

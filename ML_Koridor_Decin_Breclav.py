@@ -13,8 +13,8 @@ from matplotlib.ticker import  MultipleLocator
 
 # Type here location of your input files
 files = {
-    "T-Mobile": "dataset_Koridor_Decin_Breclav\\T_mobile.csv",
-    "O2": "dataset_Koridor_Decin_Breclav\\o2.csv",
+    "T-Mobile": "dataset_Koridor_Decin_Breclav\\T_Mobile.csv",
+    "O2": "dataset_Koridor_Decin_Breclav\\O2.csv",
     "Vodafone": "dataset_Koridor_Decin_Breclav\\Vodafone.csv"
 }
 # Color settings for operators

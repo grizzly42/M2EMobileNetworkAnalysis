@@ -14,8 +14,8 @@ from matplotlib.ticker import FuncFormatter, MultipleLocator
 
 # Type here location of your input files
 files = {
-    "T-Mobile": "dataset_Koridor_Decin_Breclav\\T_mobile.csv",
-    "O2": "dataset_Koridor_Decin_Breclav\\o2.csv",
+    "T-Mobile": "dataset_Koridor_Decin_Breclav\\T_Mobile.csv",
+    "O2": "dataset_Koridor_Decin_Breclav\\O2.csv",
     "Vodafone": "dataset_Koridor_Decin_Breclav\\Vodafone.csv"
 }
 
@@ -328,11 +328,20 @@ for op, df_op in df_all.groupby("Operator"):
     #plt.savefig(f"{SaveFigLoc}/polohaSNR_{op}.pdf", format="pdf", bbox_inches="tight") 
 #--------------------------------------------------------------------------------------------------------------------   """
     
+    
+GSM_BANDS = {"EGSM", "PGSM"}                     # 2G
+LTE_BANDS = {"L1","L3","L7","L8","L20","L28","L38"}  # 4G
+NR_BANDS  = {"N1","N3","N7","N8","N28","N38","N78"}  # 5G
 ## Technology and band depending on location supported by map
 for op, df_op in df_all.groupby("Operator"):
     fig, ax = plt.subplots(figsize=FigSizeSet)
     # find out not NaN rows in BAND colum
     df_op = df_op[df_op["BAND"].notna()].copy()
+    df_op = df_op[
+    ((df_op["NetworkTech"] == "2G") & (df_op["BAND"].isin(GSM_BANDS))) |
+    ((df_op["NetworkTech"] == "4G") & (df_op["BAND"].isin(LTE_BANDS))) |
+    ((df_op["NetworkTech"] == "5G") & (df_op["BAND"].isin(NR_BANDS)))
+    ]
     # create technology band labels to legend
     df_op["TECH_BAND"] = (df_op["NetworkTech"].astype(str) + " " + df_op["BAND"].astype(str) + " (" + df_op["BAND"].map(BAND_MHz).fillna("?") + ")")
     # get our gps location and transfer Longitude and Latitude to Web Mercator (meters) - basemap require this
